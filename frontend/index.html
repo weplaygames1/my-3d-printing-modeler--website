@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-3D Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>3D Model Generator</h1>
+        <p>Describe your model below and click 'Generate'.</p>
+    </header>
+
+    <main>
+        <div class="input-area">
+            <textarea id="prompt-input" rows="4" placeholder="e.g., A futuristic spaceship with green neon lights..."></textarea>
+            <button id="generate-button">Generate 3D Model</button>
+        </div>
+        
+        <div class="model-display">
+            <h2>Result Area</h2>
+            <div id="loading-status">Enter a prompt and click Generate.</div>
+            <div id="3d-viewer">
+                </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
