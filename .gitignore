@@ -1,0 +1,21 @@
+# .gitignore content
+# Dependencies
+/node_modules
+/venv
+__pycache__
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Backend-specific ignored files
+backend/instance/
+backend/*.sqlite3
+
+# Log files
+*.log
+
+# 3D Model output (these can be large and should not always be committed)
+*.obj
+*.glb
+*.stl
