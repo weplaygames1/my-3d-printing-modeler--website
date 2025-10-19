@@ -5,7 +5,6 @@ import time
 import os
 
 # Configuration for Flask
-# We specify the static_folder to be 'static' inside the backend directory
 app = Flask(__name__, static_folder='static')
 CORS(app) # Enables CORS for all routes
 
@@ -17,8 +16,7 @@ def generate_model():
     if not prompt:
         return jsonify({"error": "No prompt provided"}), 400
 
-    # Line 17 (The one we had trouble with) is now guaranteed clean:
-    print(f"Received prompt: '{prompt}'")
+    # The troublesome 'print' line has been REMOVED here.
     
     # --- SIMULATE GENERATION ---
     time.sleep(3) # Simulate the time it takes for an AI model to run
