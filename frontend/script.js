@@ -1,9 +1,12 @@
 // script.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const generateButton = document.getElementById('generate-button');
     const promptInput = document.getElementById('prompt-input');
     const loadingStatus = document.getElementById('loading-status');
     const viewer = document.getElementById('3d-viewer');
+    
+    // We remove the global Three.js variables (scene, camera, etc.)
 
     generateButton.addEventListener('click', async () => {
         const prompt = promptInput.value.trim();
@@ -15,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. Update status to show generation started
         loadingStatus.textContent = `Generating model for: "${prompt}"... This may take a moment.`;
-        viewer.innerHTML = "Initializing 3D generation...";
+        viewer.innerHTML = "Waiting for model download...";
         
         try {
             // 2. Make the API call to the Flask backend
@@ -32,14 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 // 3. Successful response from backend
                 const modelFileName = data.model_filename || 'generated_model.stl';
+                const fileUrl = `http://127.0.0.1:5000/static/${modelFileName}`;
                 
                 loadingStatus.textContent = `✅ Success! Model generation complete. Download of **${modelFileName}** initiated.`;
-                viewer.innerHTML = `Model generation complete! Preparing 3D viewer...`;
+                viewer.innerHTML = `File download should be starting now! Check your downloads folder.`;
                 
-                // 4. Trigger the download of the file
-                // We construct the full URL to the static file on the Flask server
-                const fileUrl = `http://127.0.0.1:5000/static/${modelFileName}`;
-                triggerDownload(fileUrl, modelFileName);
+                // --- DOWNLOAD ONLY ---
+                triggerDownload(fileUrl, modelFileName); 
                 
             } else {
                 // Handle API error messages
@@ -58,8 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Function to create a temporary link element and trigger a file download.
- * * @param {string} url The full URL of the file to download (e.g., http://127.0.0.1:5000/static/model.stl).
- * @param {string} filename The suggested name for the downloaded file (e.g., model.stl).
+ * @param {string} url The full URL of the file to download.
+ * @param {string} filename The suggested name for the downloaded file.
  */
 function triggerDownload(url, filename) {
     const link = document.createElement('a');
@@ -82,3 +84,5 @@ function triggerDownload(url, filename) {
     // Clean up by removing the temporary link
     document.body.removeChild(link);
 }
+
+// NOTE: We have removed the init3DViewer and loadSTLModel functions completely.
