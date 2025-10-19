@@ -6,7 +6,7 @@ import os
 
 # Configuration for Flask
 app = Flask(__name__, static_folder='static')
-CORS(app) # Enables CORS for all routes
+CORS(app)
 
 @app.route('/generate', methods=['POST'])
 def generate_model():
@@ -16,8 +16,6 @@ def generate_model():
     if not prompt:
         return jsonify({"error": "No prompt provided"}), 400
 
-    # The troublesome 'print' line has been REMOVED here.
-    
     # --- SIMULATE GENERATION ---
     time.sleep(3) # Simulate the time it takes for an AI model to run
     
@@ -25,16 +23,13 @@ def generate_model():
     timestamp = int(time.time())
     generated_filename = f"model_{timestamp}.stl" 
     
-    # 2. Save a placeholder file in the 'static' folder for the test to succeed
-    
-    # Path to the static folder (create if it doesn't exist)
+    # 2. Save a placeholder file in the 'static' folder
     static_dir = os.path.join(app.root_path, 'static')
     os.makedirs(static_dir, exist_ok=True)
     
-    # Create an empty file with basic STL data (a single triangle)
     placeholder_filepath = os.path.join(static_dir, generated_filename)
     
-    # Note: We are writing ASCII STL data here for simplicity. 
+    # Create an empty file with basic ASCII STL data
     with open(placeholder_filepath, 'w') as f:
         f.write("solid Model\n")
         f.write("facet normal 0 0 1\n")
@@ -47,17 +42,16 @@ def generate_model():
         f.write("endsolid Model")
 
 
-    # 3. Send back the success response with the generated filename
+    # 3. Send back the success response
     return jsonify({
         "status": "success",
         "prompt": prompt,
         "model_filename": generated_filename,
     }), 200
 
-# This is the route that allows the frontend to request the generated file for download
+# This is the route that serves the file to the frontend
 @app.route('/static/<path:filename>')
 def static_files(filename):
-    # This securely serves the file from the 'static' folder
     return send_from_directory(app.static_folder, filename)
 
 if __name__ == '__main__':
