@@ -14,7 +14,7 @@ def generate_model():
     if not prompt:
         return jsonify({"error": "No prompt provided"}), 400
 
-    print(f"Received prompt: '{prompt}'")
+print(f"Received prompt: '{prompt}'")
     
     # --- 2. THE AI MAGIC HAPPENS HERE ---
     # In the future, this is where you would call your actual text-to-3D model.
