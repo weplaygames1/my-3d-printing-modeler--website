@@ -1,39 +1,66 @@
 # app.py
-from flask import Flask, request, jsonify
-from flask_cors import CORS # We need to install Flask-CORS for cross-origin requests
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+import time
+import os
 
-app = Flask(__name__)
+# Configuration for Flask
+# We specify the static_folder to be 'static' inside the backend directory
+app = Flask(__name__, static_folder='static')
 CORS(app) # Enables CORS for all routes
 
 @app.route('/generate', methods=['POST'])
 def generate_model():
-    # 1. Get the prompt from the user
     data = request.get_json()
     prompt = data.get('prompt', '').strip()
     
     if not prompt:
         return jsonify({"error": "No prompt provided"}), 400
 
-print(f"Received prompt: '{prompt}'")
+    # Line 17 (The one we had trouble with) is now guaranteed clean:
+    print(f"Received prompt: '{prompt}'")
     
-    # --- 2. THE AI MAGIC HAPPENS HERE ---
-    # In the future, this is where you would call your actual text-to-3D model.
-    # For now, we simulate the processing time and result.
+    # --- SIMULATE GENERATION ---
+    time.sleep(3) # Simulate the time it takes for an AI model to run
     
-    # Simulate a time-consuming AI process (e.g., 5 seconds)
-    import time
-    time.sleep(5)
+    # 1. Generate a unique, placeholder STL filename based on the current time
+    timestamp = int(time.time())
+    generated_filename = f"model_{timestamp}.stl" 
     
-    # 3. Send back a placeholder result
+    # 2. Save a placeholder file in the 'static' folder for the test to succeed
     
-    # The 'filename' is a placeholder for the path to the generated 3D file (e.g., 'model.glb')
+    # Path to the static folder (create if it doesn't exist)
+    static_dir = os.path.join(app.root_path, 'static')
+    os.makedirs(static_dir, exist_ok=True)
+    
+    # Create an empty file with basic STL data (a single triangle)
+    placeholder_filepath = os.path.join(static_dir, generated_filename)
+    
+    # Note: We are writing ASCII STL data here for simplicity. 
+    with open(placeholder_filepath, 'w') as f:
+        f.write("solid Model\n")
+        f.write("facet normal 0 0 1\n")
+        f.write("outer loop\n")
+        f.write("vertex 0 0 0\n")
+        f.write("vertex 10 0 0\n")
+        f.write("vertex 0 10 0\n")
+        f.write("endloop\n")
+        f.write("endfacet\n")
+        f.write("endsolid Model")
+
+
+    # 3. Send back the success response with the generated filename
     return jsonify({
         "status": "success",
         "prompt": prompt,
-        "model_filename": "generated_model_123.glb",
-        "model_url": f"/static/models/generated_model_123.glb"
+        "model_filename": generated_filename,
     }), 200
 
+# This is the route that allows the frontend to request the generated file for download
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    # This securely serves the file from the 'static' folder
+    return send_from_directory(app.static_folder, filename)
+
 if __name__ == '__main__':
-    # Running on port 5000 is standard for Flask development
     app.run(debug=True, port=5000)
